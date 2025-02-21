@@ -7,17 +7,19 @@
     <style>
         body { text-align: center; font-family: Arial, sans-serif; overflow: hidden; margin: 0; }
         canvas { background: lightblue; display: block; margin: 20px auto; }
-        
+
+        /* 🎯 스코어 위치 조정 */
         #score {
             position: absolute;
-            bottom: 10px; /* 화면 아래로 이동 */
+            top: 10%;  /* 🆕 게임 화면 중앙 상단으로 이동 */
             left: 50%;
-            transform: translateX(-50%); /* 중앙 정렬 */
-            font-size: 20px;
-            background: rgba(0, 0, 0, 0.5); /* 가독성 향상 */
+            transform: translateX(-50%);
+            font-size: 22px;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.6); /* 배경 추가 */
             color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 8px 15px;
+            border-radius: 10px;
         }
 
         #startButton, #toggleMusic, #easyMode, #hardMode {
