@@ -6,7 +6,7 @@
     <title>Turtle Run Game</title>
     <style>
         body { text-align: center; font-family: Arial, sans-serif; overflow: hidden; }
-        canvas { background: lightblue; display: block; margin: 20px auto; }
+        canvas { background: lightblue; display: block; margin: 20px auto; width: 100%; height: auto; max-width: 800px; }
         #score { position: absolute; top: 10px; left: 10px; font-size: 20px; }
         #startButton, #toggleMusic, #easyMode, #hardMode { margin: 10px; padding: 10px; font-size: 16px; cursor: pointer; }
     </style>
@@ -17,7 +17,7 @@
     <button id="toggleMusic">Toggle Music</button>
     <button id="easyMode">게임 1단계</button>
     <button id="hardMode">게임 2단계</button>
-    <canvas id="gameCanvas" width="100%" max-width="800" height="auto"></canvas>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
     <audio id="bgMusic" loop>
         <source src="1.mp3" type="audio/mpeg">
     </audio>
@@ -30,7 +30,7 @@
         const toggleMusicButton = document.getElementById("toggleMusic");
         const easyModeButton = document.getElementById("easyMode");
         const hardModeButton = document.getElementById("hardMode");
-        
+
         let gameRunning = false;
         let score = 0;
         let startTime;
@@ -41,7 +41,7 @@
         let difficulty = "easy";
 
         let frog = { x: 50, y: 300, width: 40, height: 30, velocityY: 0, gravity: 1.5 };
-        
+
         function drawFrog() {
             ctx.fillStyle = "green";
             ctx.fillRect(frog.x, frog.y, frog.width, frog.height);
@@ -53,14 +53,14 @@
             ctx.arc(frog.x + 30, frog.y - 5, 5, 0, Math.PI * 2);
             ctx.fill();
         }
-        
+
         function drawObstacles() {
             ctx.fillStyle = "brown";
             obstacles.forEach(obstacle => {
                 ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
             });
         }
-        
+
         function checkCollision() {
             return obstacles.some(obstacle => {
                 return (
@@ -70,64 +70,64 @@
                 );
             });
         }
-        
+
         function updateGame() {
             if (!gameRunning) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             frog.y += frog.velocityY;
             frog.velocityY += frog.gravity;
             if (frog.y + frog.height > canvas.height) {
                 frog.y = canvas.height - frog.height;
                 frog.velocityY = 0;
             }
-            
+
             obstacles.forEach(obstacle => {
                 obstacle.x -= obstacleSpeed;
             });
-            
+
             if (Date.now() > nextObstacleTime) {
                 obstacles.push({ x: 800, y: 370, width: 30, height: 30 });
                 nextObstacleTime = Date.now() + Math.random() * 2000 + 1000;
             }
-            
+
             if (obstacles[0] && obstacles[0].x + obstacles[0].width < 0) {
                 obstacles.shift();
                 score += 10;
                 scoreDisplay.textContent = "Score: " + score;
             }
-            
+
             if (checkCollision()) {
                 gameRunning = false;
                 alert("Game Over! Final Score: " + score);
                 location.reload();
             }
-            
+
             if (Date.now() - startTime >= 60000) {
                 alert("New Level Unlocked! Obstacles are faster now.");
                 obstacleSpeed += 2;
                 startTime = Date.now();
             }
-            
+
             drawFrog();
             drawObstacles();
             requestAnimationFrame(updateGame);
         }
-        
-   // 기존 키보드 이벤트 (점프 기능)
-document.addEventListener("keydown", (e) => {
-    if ((e.code === "Space" || e.code === "ArrowUp") && frog.y >= canvas.height - frog.height) {
-        frog.velocityY = -20;
-    }
-});
 
-// 📱 추가: 터치 이벤트 (모바일에서도 점프 가능)
-canvas.addEventListener("touchstart", () => {
-    if (frog.y >= canvas.height - frog.height) {
-        frog.velocityY = -20;
-    }
-});
-        
+        // ✅ 키보드 이벤트 (PC용 점프)
+        document.addEventListener("keydown", (e) => {
+            if ((e.code === "Space" || e.code === "ArrowUp") && frog.y >= canvas.height - frog.height) {
+                frog.velocityY = -20;
+            }
+        });
+
+        // ✅ 터치 이벤트 추가 (모바일에서도 점프 가능)
+        canvas.addEventListener("touchstart", () => {
+            if (frog.y >= canvas.height - frog.height) {
+                frog.velocityY = -20;
+            }
+        });
+
         startButton.addEventListener("click", () => {
             if (!gameRunning) {
                 gameRunning = true;
@@ -140,7 +140,7 @@ canvas.addEventListener("touchstart", () => {
                 bgMusic.play().catch(err => console.log("Music play blocked", err));
             }
         });
-        
+
         toggleMusicButton.addEventListener("click", () => {
             if (musicPlaying) {
                 bgMusic.pause();
@@ -149,16 +149,17 @@ canvas.addEventListener("touchstart", () => {
             }
             musicPlaying = !musicPlaying;
         });
-        
+
         easyModeButton.addEventListener("click", () => {
             difficulty = "easy";
             alert("Easy Mode Selected. 장애물 속도: 5");
         });
-        
+
         hardModeButton.addEventListener("click", () => {
             difficulty = "hard";
             alert("Hard Mode Selected. 장애물 속도: 8");
         });
+
     </script>
 </body>
 </html>
