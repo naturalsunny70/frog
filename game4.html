@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turtle Run Game</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; overflow: hidden; }
+        canvas { background: lightblue; display: block; margin: 20px auto; }
+        #score { position: absolute; top: 10px; left: 10px; font-size: 20px; }
+        #startButton, #toggleMusic, #easyMode, #hardMode { margin: 10px; padding: 10px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <button id="startButton">Start Game</button>
+    <button id="toggleMusic">Toggle Music</button>
+    <button id="easyMode">게임 1단계</button>
+    <button id="hardMode">게임 2단계</button>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <audio id="bgMusic" loop>
+        <source src="1.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreDisplay = document.getElementById("score");
+        const startButton = document.getElementById("startButton");
+        const bgMusic = document.getElementById("bgMusic");
+        const toggleMusicButton = document.getElementById("toggleMusic");
+        const easyModeButton = document.getElementById("easyMode");
+        const hardModeButton = document.getElementById("hardMode");
+        
+        let gameRunning = false;
+        let score = 0;
+        let startTime;
+        let obstacles = [];
+        let obstacleSpeed = 5;
+        let musicPlaying = false;
+        let nextObstacleTime = Date.now() + Math.random() * 2000 + 1000;
+        let difficulty = "easy";
+
+        let frog = { x: 50, y: 300, width: 40, height: 30, velocityY: 0, gravity: 1.5 };
+        
+        function drawFrog() {
+            ctx.fillStyle = "green";
+            ctx.fillRect(frog.x, frog.y, frog.width, frog.height);
+            ctx.fillRect(frog.x - 10, frog.y + 10, 15, 15);
+            ctx.fillRect(frog.x + 35, frog.y + 10, 15, 15);
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.arc(frog.x + 10, frog.y - 5, 5, 0, Math.PI * 2);
+            ctx.arc(frog.x + 30, frog.y - 5, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawObstacles() {
+            ctx.fillStyle = "brown";
+            obstacles.forEach(obstacle => {
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            });
+        }
+        
+        function checkCollision() {
+            return obstacles.some(obstacle => {
+                return (
+                    frog.x < obstacle.x + obstacle.width &&
+                    frog.x + frog.width > obstacle.x &&
+                    frog.y + frog.height > obstacle.y
+                );
+            });
+        }
+        
+        function updateGame() {
+            if (!gameRunning) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            frog.y += frog.velocityY;
+            frog.velocityY += frog.gravity;
+            if (frog.y + frog.height > canvas.height) {
+                frog.y = canvas.height - frog.height;
+                frog.velocityY = 0;
+            }
+            
+            obstacles.forEach(obstacle => {
+                obstacle.x -= obstacleSpeed;
+            });
+            
+            if (Date.now() > nextObstacleTime) {
+                obstacles.push({ x: 800, y: 370, width: 30, height: 30 });
+                nextObstacleTime = Date.now() + Math.random() * 2000 + 1000;
+            }
+            
+            if (obstacles[0] && obstacles[0].x + obstacles[0].width < 0) {
+                obstacles.shift();
+                score += 10;
+                scoreDisplay.textContent = "Score: " + score;
+            }
+            
+            if (checkCollision()) {
+                gameRunning = false;
+                alert("Game Over! Final Score: " + score);
+                location.reload();
+            }
+            
+            if (Date.now() - startTime >= 60000) {
+                alert("New Level Unlocked! Obstacles are faster now.");
+                obstacleSpeed += 2;
+                startTime = Date.now();
+            }
+            
+            drawFrog();
+            drawObstacles();
+            requestAnimationFrame(updateGame);
+        }
+        
+        document.addEventListener("keydown", (e) => {
+            if ((e.code === "Space" || e.code === "ArrowUp") && frog.y >= canvas.height - frog.height) {
+                frog.velocityY = -20;
+            }
+        });
+        
+        startButton.addEventListener("click", () => {
+            if (!gameRunning) {
+                gameRunning = true;
+                score = 0;
+                obstacleSpeed = difficulty === "easy" ? 5 : 8;
+                scoreDisplay.textContent = "Score: 0";
+                obstacles = [];
+                startTime = Date.now();
+                updateGame();
+                bgMusic.play().catch(err => console.log("Music play blocked", err));
+            }
+        });
+        
+        toggleMusicButton.addEventListener("click", () => {
+            if (musicPlaying) {
+                bgMusic.pause();
+            } else {
+                bgMusic.play().catch(err => console.log("Music play blocked", err));
+            }
+            musicPlaying = !musicPlaying;
+        });
+        
+        easyModeButton.addEventListener("click", () => {
+            difficulty = "easy";
+            alert("Easy Mode Selected. 장애물 속도: 5");
+        });
+        
+        hardModeButton.addEventListener("click", () => {
+            difficulty = "hard";
+            alert("Hard Mode Selected. 장애물 속도: 8");
+        });
+    </script>
+</body>
+</html>
