@@ -17,9 +17,7 @@
     <button id="toggleMusic">Toggle Music</button>
     <button id="easyMode">게임 1단계</button>
     <button id="hardMode">게임 2단계</button>
-
-
-    <canvas id="gameCanvas" width="800" height="400" ></canvas>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
     <audio id="bgMusic" loop>
         <source src="1.mp3" type="audio/mpeg">
     </audio>
@@ -32,8 +30,6 @@
         const toggleMusicButton = document.getElementById("toggleMusic");
         const easyModeButton = document.getElementById("easyMode");
         const hardModeButton = document.getElementById("hardMode");
-
-
         
         let gameRunning = false;
         let score = 0;
@@ -45,14 +41,6 @@
         let difficulty = "easy";
 
         let frog = { x: 50, y: 300, width: 40, height: 30, velocityY: 0, gravity: 1.5 };
-
-canvas {
-    width: 100%;
-    height: auto;
-    max-width: 800px;
-}
-     
-
         
         function drawFrog() {
             ctx.fillStyle = "green";
@@ -126,7 +114,7 @@ canvas {
             requestAnimationFrame(updateGame);
         }
         
-// 기존 키보드 이벤트 (점프 기능)
+   // 기존 키보드 이벤트 (점프 기능)
 document.addEventListener("keydown", (e) => {
     if ((e.code === "Space" || e.code === "ArrowUp") && frog.y >= canvas.height - frog.height) {
         frog.velocityY = -20;
