@@ -17,7 +17,9 @@
     <button id="toggleMusic">Toggle Music</button>
     <button id="easyMode">게임 1단계</button>
     <button id="hardMode">게임 2단계</button>
-    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+
+    <canvas id="gameCanvas" width="100%" height="auto"></canvas>
     <audio id="bgMusic" loop>
         <source src="1.mp3" type="audio/mpeg">
     </audio>
@@ -114,11 +116,19 @@
             requestAnimationFrame(updateGame);
         }
         
-        document.addEventListener("keydown", (e) => {
-            if ((e.code === "Space" || e.code === "ArrowUp") && frog.y >= canvas.height - frog.height) {
-                frog.velocityY = -20;
-            }
-        });
+// 기존 키보드 이벤트 (점프 기능)
+document.addEventListener("keydown", (e) => {
+    if ((e.code === "Space" || e.code === "ArrowUp") && frog.y >= canvas.height - frog.height) {
+        frog.velocityY = -20;
+    }
+});
+
+// 📱 추가: 터치 이벤트 (모바일에서도 점프 가능)
+canvas.addEventListener("touchstart", () => {
+    if (frog.y >= canvas.height - frog.height) {
+        frog.velocityY = -20;
+    }
+});
         
         startButton.addEventListener("click", () => {
             if (!gameRunning) {
